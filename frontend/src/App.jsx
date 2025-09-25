@@ -42,10 +42,7 @@ const App = () => {
           element={isSignedIn ? <Navigate to={"/"} replace /> : <Navigate to={"/auth"} replace />} 
           
           />
-
-
         </SentryRoutes>        
-
   );
 };
 
