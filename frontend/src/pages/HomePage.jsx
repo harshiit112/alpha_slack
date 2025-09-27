@@ -2,7 +2,7 @@ import { UserButton } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useStreamChat } from "../hooks/useStreamChat";
-import PageLoader from "../components/PageLoader";
+import PageLoader from "../components/pageLoader"
 
 import {
   Chat,
@@ -18,7 +18,7 @@ import "../styles/stream-chat-theme.css";
 import { HashIcon, PlusIcon, UsersIcon } from "lucide-react";
 import CreateChannelModal from "../components/CreateChannelModal";
 import CustomChannelPreview from "../components/CustomChannelPreview";
-import UsersList from "../components/UsersList";
+// import UsersList from "../components/"
 // import CustomChannelHeader from "../components/CustomChannelHeader";
 
 const HomePage = () => {
