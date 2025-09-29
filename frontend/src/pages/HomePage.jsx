@@ -2,7 +2,7 @@ import { UserButton } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useStreamChat } from "../hooks/useStreamChat";
-import PageLoader from "../components/pageLoader"
+import PageLoader from "../components/PageLoader";
 
 import {
   Chat,
@@ -18,7 +18,7 @@ import "../styles/stream-chat-theme.css";
 import { HashIcon, PlusIcon, UsersIcon } from "lucide-react";
 import CreateChannelModal from "../components/CreateChannelModal";
 import CustomChannelPreview from "../components/CustomChannelPreview";
-// import UsersList from "../components/"
+import UsersList from "../pages/UsersList";
 // import CustomChannelHeader from "../components/CustomChannelHeader";
 
 const HomePage = () => {
@@ -54,7 +54,7 @@ const HomePage = () => {
               <div className="team-channel-list__header gap-4">
                 <div className="brand-container">
                   <img src="/logo.png" alt="Logo" className="brand-logo" />
-                  <span className="brand-name">Slack</span>
+                  <span className="brand-name">Slap</span>
                 </div>
                 <div className="user-button-wrapper">
                   <UserButton />
