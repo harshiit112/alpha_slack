@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router";
+﻿import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useChatContext } from "stream-chat-react";
 import * as Sentry from "@sentry/react";
 import toast from "react-hot-toast";
+
 import { AlertCircleIcon, HashIcon, LockIcon, UsersIcon, XIcon } from "lucide-react";
 
 const CreateChannelModal = ({ onClose }) => {

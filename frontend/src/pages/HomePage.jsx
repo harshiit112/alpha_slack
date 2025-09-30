@@ -1,15 +1,15 @@
 import { UserButton } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import { useStreamChat } from "../hooks/useStreamChat";
-import PageLoader from "../components/PageLoader";
+import PageLoader from "../components/pageLoader.jsx"
 
 import {
   Chat,
   Channel,
   ChannelList,
-  MessageList,
   MessageInput,
+  MessageList,
   Thread,
   Window,
 } from "stream-chat-react";
