@@ -71,37 +71,38 @@ import chatRoutes from "./routes/chat.route.js";
 
 const app = express();
 
-// Allowed Origins List
+// Define allowed origins
 const allowedOrigins = [
   "https://alpha-slack-frontend.vercel.app",
-  ENV.CLIENT_URL
+  ENV.CLIENT_URL,
 ].filter(Boolean);
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, postman)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(null, true); // Or callback(new Error('Not allowed by CORS'))
+      callback(null, true);
     }
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 };
 
-// 1. Enable CORS for all routes (including preflight)
+// 1. Enable CORS middleware
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Handle Preflight explicitly
 
-// 2. Inngest route (placed before Auth/DB middleware)
+// 2. Explicitly intercept ALL preflight OPTIONS requests before auth
+app.options("*", cors(corsOptions));
+
+// 3. Inngest Route (before Clerk)
 app.use("/api/inngest", serve({ client: inngest, functions }));
 
-// 3. Clerk Middleware
+// 4. Clerk Middleware
 app.use(clerkMiddleware());
 
-// 4. Lazy DB Connection
+// 5. Lazy Database Connection Middleware
 let isConnected = false;
 const ensureDbConnected = async (req, res, next) => {
   if (!isConnected) {
@@ -118,13 +119,14 @@ const ensureDbConnected = async (req, res, next) => {
 
 app.use(ensureDbConnected);
 
-// 5. Routes
+// 6. Routes
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
 app.use("/api/chat", chatRoutes);
 
+// Sentry Error Handler
 Sentry.setupExpressErrorHandler(app);
 
 if (ENV.NODE_ENV !== "production") {
