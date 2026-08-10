@@ -71,7 +71,16 @@ import chatRoutes from "./routes/chat.route.js";
 
 const app = express();
 
-// Database Connection Middleware for Serverless / Local
+app.use(express.json());
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+
+// 1. Inngest route (Placed BEFORE clerkMiddleware and DB middleware)
+app.use("/api/inngest", serve({ client: inngest, functions }));
+
+// 2. Clerk Authentication Middleware
+app.use(clerkMiddleware());
+
+// 3. Lazy Database Connection Middleware
 let isConnected = false;
 const ensureDbConnected = async (req, res, next) => {
   if (!isConnected) {
@@ -86,20 +95,16 @@ const ensureDbConnected = async (req, res, next) => {
   next();
 };
 
-app.use(express.json());
-app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
-app.use(clerkMiddleware());
-
-// Connect to DB on incoming requests
 app.use(ensureDbConnected);
 
+// 4. Routes
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 
+// 5. Error Handler
 Sentry.setupExpressErrorHandler(app);
 
 // Only listen on a port in local development
@@ -109,5 +114,4 @@ if (ENV.NODE_ENV !== "production") {
   });
 }
 
-// Export for Vercel Serverless Function
 export default app;
