@@ -57,9 +57,9 @@ import { addUserToPublicChannels, deleteStreamUser, upsertStreamUser } from "./s
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "slack-clone" });
 
+// 1. syncUser
 const syncUser = inngest.createFunction(
-  { id: "sync-user" },
-  { event: "clerk/user.created" },
+  { id: "sync-user", event: "clerk/user.created" }, // <-- Event goes in 1st object
   async ({ event }) => {
     await connectDB();
 
@@ -84,9 +84,9 @@ const syncUser = inngest.createFunction(
   }
 );
 
+// 2. deleteUserFromDB
 const deleteUserFromDB = inngest.createFunction(
-  { id: "delete-user-from-db" },
-  { event: "clerk/user.deleted" },
+  { id: "delete-user-from-db", event: "clerk/user.deleted" }, // <-- Event goes in 1st object
   async ({ event }) => {
     await connectDB();
 
