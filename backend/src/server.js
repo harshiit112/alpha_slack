@@ -13,35 +13,34 @@ import chatRoutes from "./routes/chat.route.js";
 
 const app = express();
 
+// 1. CORS Configuration
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  ENV.CLIENT_URL, // e.g. https://alpha-slack-frontend.vercel.app
-]
+  "https://alpha-slack-frontend.vercel.app",
+  ENV.CLIENT_URL,
+].filter(Boolean);
 
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, Postman, server-to-server)
+      if (!origin) return callback(null, true);
 
-// 1. Configure CORS options explicitly
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, postman)
-    if (!origin) return callback(null, true);
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app")
+      ) {
+        return callback(null, origin); // Dynamically echo the exact requesting origin
+      }
 
-    // Match exact listed origins or allow any *.vercel.app deployment preview
-    if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-};
-
-app.use(cors(corsOptions));
-
-// Explicitly answer HTTP OPTIONS preflight requests before any auth check
-// app.options("*", cors(corsOptions));
+      return callback(null, false);
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  })
+);
 
 app.use(express.json());
 
@@ -78,7 +77,7 @@ app.use("/api/chat", chatRoutes);
 // 6. Error Handler
 Sentry.setupExpressErrorHandler(app);
 
-// Only listen on a port in local development
+// Local development server listener
 if (ENV.NODE_ENV !== "production") {
   app.listen(ENV.PORT || 5001, () => {
     console.log("Server started on port:", ENV.PORT || 5001);
