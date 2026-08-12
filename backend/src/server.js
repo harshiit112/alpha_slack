@@ -15,7 +15,22 @@ const app = express();
 
 // 1. Configure CORS options explicitly
 const corsOptions = {
-  origin: ENV.CLIENT_URL || "http://localhost:5173",
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+
+    // Allow local development and any vercel preview deployment
+    const isAllowed = 
+      origin === ENV.CLIENT_URL ||
+      origin.startsWith("http://localhost:") ||
+      origin.endsWith(".vercel.app");
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
