@@ -13,19 +13,21 @@ import chatRoutes from "./routes/chat.route.js";
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  ENV.CLIENT_URL, // e.g. https://alpha-slack-frontend.vercel.app
+]
+
+
 // 1. Configure CORS options explicitly
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, server-to-server)
+    // Allow requests with no origin (mobile apps, curl, postman)
     if (!origin) return callback(null, true);
 
-    // Allow local development and any vercel preview deployment
-    const isAllowed = 
-      origin === ENV.CLIENT_URL ||
-      origin.startsWith("http://localhost:") ||
-      origin.endsWith(".vercel.app");
-
-    if (isAllowed) {
+    // Match exact listed origins or allow any *.vercel.app deployment preview
+    if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
