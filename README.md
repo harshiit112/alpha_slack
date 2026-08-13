@@ -1,165 +1,249 @@
-# 💬 Alpha Slack — Real-Time Chat & Video Calling Platform
+![Alpha Slack Banner](./assets/banner.jpg)
 
-Alpha Slack is a modern, full-stack, enterprise-grade clone of Slack, designed for high-performance real-time messaging, multi-user channels, and high-fidelity video/audio calling. 
+# 🚀 Alpha Slack — Real-Time Workspace & Video Collaboration Platform
 
-Built on a robust architecture featuring **React 19**, **Vite**, **Express**, **MongoDB (Mongoose)**, **Clerk Auth**, **Stream Chat/Video SDKs**, and serverless event-driven background processing using **Inngest**.
-
----
-
-## 🚀 Key Features
-
-- **🔐 Robust Authentication**: Secure registration, sign-in, and profile management powered by Clerk.
-- **💬 Real-Time Messaging**: Group channels and direct messaging (DMs) with typing indicators, message reactions, file attachments, and pinned messages using **GetStream Chat SDK**.
-- **📹 HD Video & Audio Calls**: Start or join high-fidelity audio/video calls directly from any channel header utilizing the **GetStream Video SDK**.
-- **🔄 Event-Driven User Synchronization**: Automatic user provisioning and deletion between Clerk Auth, MongoDB database, and Stream Chat using **Inngest** webhooks.
-- **📊 Application Monitoring**: Comprehensive client-side and server-side error tracking and performance profiling integrated with **Sentry**.
-- **⚡ Next-Gen Styling**: Built with the brand new **Tailwind CSS v4** engine for highly responsive, ultra-fast, and premium UI layouts.
+Alpha Slack is an enterprise-grade, high-performance real-time messaging and video conferencing platform modeled after Slack. Designed with a modern dark theme and powered by a robust event-driven architecture, it connects standard chat and calling services with background job queues, secure authentication syncs, and comprehensive telemetry.
 
 ---
 
-## 🛠️ Technology Stack
+### 🌟 Project Badges & Stack Overview
 
-| Component | Technology |
-| :--- | :--- |
-| **Frontend** | React 19, Vite, Tailwind CSS v4, TanStack Query (React Query v5), Axios, React Router v7, Lucide Icons |
-| **Backend** | Node.js, Express v5, MongoDB, Mongoose, Inngest |
-| **Integrations** | Clerk Express & Clerk React (Auth), GetStream Chat & Video SDKs, Sentry (Error Tracking) |
+[![React 19](https://img.shields.io/badge/React-19.0-blue?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Express.js](https://img.shields.io/badge/Express-5.1-lightgrey?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Clerk Auth](https://img.shields.io/badge/Clerk-Authentication-6C47FF?style=for-the-badge&logo=clerk&logoColor=white)](https://clerk.com/)
+[![Stream IO](https://img.shields.io/badge/Stream.io-Chat_%26_Video-FF0055?style=for-the-badge&logo=stream&logoColor=white)](https://getstream.io/)
+[![Inngest](https://img.shields.io/badge/Inngest-Workflows-16A34A?style=for-the-badge&logo=inngest&logoColor=white)](https://www.inngest.com/)
+[![Sentry Telemetry](https://img.shields.io/badge/Sentry-Telemetry_Observability-362D59?style=for-the-badge&logo=sentry&logoColor=white)](https://sentry.io/)
 
 ---
 
-## 📂 Project Architecture & Key Source Files
+## ⚡ Key Highlights & Core Features
+
+*   💬 **Real-Time Communication**: Support for multi-channel messaging threads, direct messaging, user presence tracking, live typing indicators, read receipts, and message reactions powered by the **Stream Chat React SDK**.
+*   🎥 **Video & Audio Calling Rooms**: Seamless, multi-peer video/audio conference rooms with active speaker layouts, participant lists, screen sharing, and media controls powered by the **Stream Video React SDK**.
+*   🔐 **Secure User Management**: Dynamic, token-based session management using **Clerk** authentication.
+*   🔄 **Event-Driven User Onboarding**: Dynamic synchronization loop triggered by Clerk Webhooks to create, update, or remove users from the MongoDB cluster and the Stream Chat/Video engines. Powered asynchronously by **Inngest** background workflows.
+*   📊 **Full-Stack Telemetry**: Performance monitoring, API latency logs, error tracking, and exception reporting across frontend React code and backend Express routes using **Sentry**.
+*   ✨ **Premium Aesthetics**: Sleek dark-mode theme designed with Tailwind CSS v4 and modular CSS layouts, featuring glassmorphism elements, custom modals (for channel creation and user invitations), search filters, and smooth micro-animations.
+
+---
+
+## 🏗️ Architectural Flow & Webhook Sync
+
+The following diagram illustrates how user onboarding works in Alpha Slack: Clerk handles the initial sign-up, fires a webhook, Inngest intercepts it to run background synchronizations, and the client uses secure tokens generated on-the-fly to connect to real-time chat and video channels.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Client User
+    participant FE as React Frontend
+    participant Clerk as Clerk Auth Server
+    participant BE as Express Backend
+    participant Inngest as Inngest Event Queue
+    participant DB as MongoDB Cluster
+    participant Stream as Stream IO Server
+
+    User->>FE: Sign Up / Sign In
+    FE->>Clerk: Authentication Request
+    Clerk-->>FE: Authenticate and Provide JWT
+    Clerk->>BE: Webhook Trigger: user.created
+    BE->>Inngest: Forward Event (clerk/user.created)
+    
+    Note over Inngest,DB: Asynchronous Sync Workflow
+    Inngest->>DB: Write User Document (Mongoose Model)
+    Inngest->>Stream: Provision Stream User & Add to Public Channels
+    
+    FE->>BE: GET /api/chat/token (with Clerk JWT)
+    BE-->>FE: Generate & Return Secure Stream Token
+    FE->>Stream: Initialize Real-Time Chat & Video Connections
+```
+
+---
+
+## 🛠️ Technology Stack Breakdown
+
+| Technology Layer | Tool / Library | Purpose & Rationale |
+| :--- | :--- | :--- |
+| **Frontend** | [React 19](https://react.dev/) | Utilizes React 19's virtual DOM, modern hooks, and state management rules for high-performance rendering. |
+| **Frontend Router** | [React Router v7](https://reactrouter.com/) | Client-side routing, route guards, and layouts with Sentry telemetry integration. |
+| **Frontend Bundler** | [Vite 7](https://vite.dev/) | Lightning-fast development server with Hot Module Replacement (HMR) and optimized build systems. |
+| **Styling Engine** | [Tailwind CSS v4](https://tailwindcss.com/) | Utilizes css-first configurations, CSS-native imports, and theme tokens for responsive layout control. |
+| **Backend Framework** | [Express 5](https://expressjs.com/) | Micro-framework handling HTTP routing, lazy database connection wrappers, and middleware services. |
+| **Database** | [MongoDB & Mongoose](https://mongoosejs.com/) | Document store storing user metadata, configured with schemas and model hooks. |
+| **Background Jobs** | [Inngest SDK](https://inngest.com/) | Durable event-driven queues, retries, and background synchronization functions. |
+| **Auth Provider** | [Clerk Express SDK](https://clerk.com/) | Secure identity verification, multi-session cookies, and user object properties. |
+| **Real-time Engine** | [Stream Chat & Video SDKs](https://getstream.io/) | Enterprise-grade WebSockets and WebRTC channels managing message syncs and multi-peer video links. |
+| **Observability** | [Sentry SDKs](https://sentry.io/) | Full-stack telemetry logging client-side crashes, API timeouts, and uncaught backend exceptions. |
+
+---
+
+## 📂 Project Structure
+
+This workspace is structured as a monorepo consisting of two primary packages:
 
 ```
-Slack/
+alpha_slack/
 ├── backend/
+│   ├── api/                     # Vercel serverless functions deployment targets
 │   ├── src/
-│   │   ├── config/
-│   │   │   ├── db.js          # MongoDB connection handler
-│   │   │   ├── env.js         # Environment variables validation & setup
-│   │   │   ├── inngest.js     # Background event handlers (syncUser, deleteUser)
-│   │   │   └── stream.js       # Stream Chat initialization and token generation
-│   │   ├── controllers/
-│   │   │   └── chat.controller.js # Stream token generator endpoint handler
-│   │   ├── middleware/
-│   │   │   └── auth.middleware.js # Protect routes using Clerk JWT verification
-│   │   ├── models/
-│   │   │   └── user.model.js  # Mongoose Schema for local User metadata
-│   │   ├── routes/
-│   │   │   └── chat.route.js  # Chat APIs (/api/chat/token)
-│   │   └── server.js          # Main Express server config
-│   └── package.json
-└── frontend/
-    ├── src/
-    │   ├── components/        # Modals for Channel Creation, Invites, Pinned Messages
-    │   ├── pages/
-    │   │   ├── AuthPage.jsx   # Clerk Sign In / Sign Up interface
-    │   │   ├── HomePage.jsx   # Main Chat layout & sidebar navigation
-    │   │   ├── CallPage.jsx   # Stream Video and Audio call stream view
-    │   │   └── UsersList.jsx  # Workspace user directory
-    │   ├── App.jsx            # Routing and Provider tree
-    │   └── main.jsx           # App entry point
-    └── package.json
-```
-
-### Key Files:
-- **Backend Entrypoint:** [`backend/src/server.js`](file:///c:/Users/hv702/Downloads/Slack/backend/src/server.js)
-- **User Sync Worker:** [`backend/src/config/inngest.js`](file:///c:/Users/hv702/Downloads/Slack/backend/src/config/inngest.js)
-- **Stream Client Wrapper:** [`backend/src/config/stream.js`](file:///c:/Users/hv702/Downloads/Slack/backend/src/config/stream.js)
-- **Frontend App Shell:** [`frontend/src/App.jsx`](file:///c:/Users/hv702/Downloads/Slack/frontend/src/App.jsx)
-- **Video Calling Room:** [`frontend/src/pages/CallPage.jsx`](file:///c:/Users/hv702/Downloads/Slack/frontend/src/pages/CallPage.jsx)
-- **Main Chat Workspace:** [`frontend/src/pages/HomePage.jsx`](file:///c:/Users/hv702/Downloads/Slack/frontend/src/pages/HomePage.jsx)
-
----
-
-## ⚙️ Environment Configuration
-
-To run this application locally, you must configure environment files in both the frontend and backend directories.
-
-### 1. Backend (`/backend/.env`)
-Create a file named `.env` inside the `/backend` folder and define:
-```env
-PORT=5001
-NODE_ENV=development
-
-# Database Configuration
-MONGO_URI=your_mongodb_connection_string
-
-# Clerk Authentication
-CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-CLERK_SECRET_KEY=your_clerk_secret_key
-
-# GetStream Credentials
-STREAM_API_KEY=your_stream_api_key
-STREAM_API_SECRET=your_stream_api_secret
-
-# Sentry Monitoring (Optional)
-SENTRY_DSN=your_sentry_backend_dsn
-
-# Inngest Background Jobs Setup
-INNGEST_EVENT_KEY=your_inngest_event_key
-INNGEST_SIGNING_KEY=your_inngest_signing_key
-
-# Client Application URL
-CLIENT_URL=http://localhost:5173
-```
-
-### 2. Frontend (`/frontend/.env`)
-Create a file named `.env` inside the `/frontend` folder and define:
-```env
-VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-VITE_STREAM_API_KEY=your_stream_api_key
-VITE_SENTRY_DSN=your_sentry_frontend_dsn
-VITE_API_BASE_URL=http://localhost:5001/api
+│   │   ├── config/              # Inngest, Mongoose database, Stream & Env configs
+│   │   ├── controllers/         # Chat and token controllers
+│   │   ├── middleware/          # Clerk validation and DB connection middlewares
+│   │   ├── models/              # Mongoose user model definitions
+│   │   ├── routes/              # Express API endpoints
+│   │   └── server.js            # Main Express application entry point
+│   ├── package.json
+│   └── vercel.json              # Serverless configuration for backend hosting
+├── frontend/
+│   ├── src/
+│   │   ├── components/          # Reusable UI widgets (Modals, Headers, Previews)
+│   │   ├── hooks/               # Custom React hooks (Stream Chat integration)
+│   │   ├── lib/                 # Axios API configuration
+│   │   ├── pages/               # Main Page Views (HomePage, CallPage, AuthPage)
+│   │   ├── providers/           # Context providers
+│   │   ├── styles/              # Global stylesheet overrides
+│   │   └── App.jsx              # Main routing and application layout
+│   ├── package.json
+│   └── vercel.json              # Serverless configuration for SPA hosting
+├── assets/
+│   └── banner.jpg               # Project branding graphic
+└── README.md                    # Root project documentation
 ```
 
 ---
 
-## 🛠️ Local Development Setup
+## 🚀 Local Installation & Setup Guide
 
-Follow these commands to install dependencies and run the project locally.
+To run Alpha Slack on your machine, follow this step-by-step guide.
 
-### Start the Backend Server
+### 📋 Prerequisites
+
+Before starting, ensure you have:
+*   [Node.js](https://nodejs.org/) installed (v18 or higher recommended).
+*   A running [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) cluster or local MongoDB instance.
+*   A [Clerk](https://clerk.com/) developer account.
+*   A [GetStream](https://getstream.io/) developer account.
+*   An [Inngest Cloud](https://www.inngest.com/) account (or run the local Inngest development server).
+
+---
+
+### Step 1: Environment Variables Configuration
+
+To run the application, copy the example configurations and populate them with your credentials.
+
+1.  **Backend Configuration**:
+    Navigate to the `backend` folder, copy the example file, and update the values:
+    ```bash
+    cd backend
+    cp .env.example .env
+    ```
+    Configure the variables in the newly created [backend/.env](file:///c:/Users/hv702/Downloads/Slack/backend/.env) file (see [backend/.env.example](file:///c:/Users/hv702/Downloads/Slack/backend/.env.example) for structure).
+
+2.  **Frontend Configuration**:
+    Navigate to the `frontend` folder, copy the example file, and update the values:
+    ```bash
+    cd ../frontend
+    cp .env.example .env
+    ```
+    Configure the variables in the newly created [frontend/.env](file:///c:/Users/hv702/Downloads/Slack/frontend/.env) file (see [frontend/.env.example](file:///c:/Users/hv702/Downloads/Slack/frontend/.env.example) for structure).
+
+---
+
+### Step 2: Install Dependencies
+
+Run the package installers in both folders:
+
+1.  **Install Backend dependencies**:
+    ```bash
+    cd ../backend
+    npm install
+    ```
+
+2.  **Install Frontend dependencies**:
+    ```bash
+    cd ../frontend
+    npm install
+    ```
+
+---
+
+### Step 3: Run the Inngest Local Dev Server
+
+Inngest requires a daemon to monitor event queues and dispatch background functions. Run the local Inngest Dev Server pointing to your backend endpoint:
+
 ```bash
-cd backend
-npm install
-npm run dev
-```
-*Note: In development mode, the server runs with `nodemon` and auto-imports `instrument.mjs` for Sentry tracing.*
-
-### Start the Inngest Dev Server (For Webhooks)
-To run and test user sync events locally, launch the Inngest dev server:
-```bash
+# In your terminal, start the Inngest Dev Server (it polls backend/api/inngest)
 npx inngest-cli@latest dev -u http://localhost:5001/api/inngest
 ```
 
-### Start the Frontend Application
-Open a new terminal window and run:
-```bash
-cd frontend
-npm install
-npm run dev
-```
+Open the Inngest dashboard at [http://localhost:8288](http://localhost:8288) to monitor background events and replay workflows.
 
 ---
 
-## 🔄 Clerk Webhook Integration (via Inngest)
+### Step 4: Configure Webhooks (Optional for Local Sync)
 
-To keep your local MongoDB users and GetStream users synchronized with Clerk authentication state, configure a Clerk webhook pointing to your Inngest server:
-
-1. Go to your **Clerk Dashboard** -> **Webhooks**.
-2. Add a new endpoint pointing to your deployed backend: `https://<your-backend-url>/api/inngest` (or use a tunnel like ngrok / Localtunnel for local development testing).
-3. Subscribe to the following Clerk events:
-   - `user.created` (maps to the `sync-user` Inngest function, which creates a database entry and registers the user in GetStream Chat).
-   - `user.deleted` (maps to the `delete-user-from-db` Inngest function, which cleans up user records in MongoDB and deletes the user from GetStream Chat).
+To receive webhooks locally from Clerk:
+1.  Expose your local backend server port (`5001`) to the internet using **ngrok**:
+    ```bash
+    ngrok http 5001
+    ```
+2.  Copy the generated forwarding URL (e.g., `https://random-subdomain.ngrok-free.app`).
+3.  Go to the **Clerk Dashboard -> Webhooks -> Add Endpoint**.
+4.  Paste the URL and append `/api/inngest`: `https://random-subdomain.ngrok-free.app/api/inngest`.
+5.  Select `user.created` and `user.deleted` as subscription events.
+6.  For local testing without webhooks, you can manually trigger events through the Inngest Dev Dashboard at [http://localhost:8288/sending](http://localhost:8288/sending).
 
 ---
 
-## 🚀 Production Deployment
+### Step 5: Start the Development Servers
 
-### Frontend (Vite + Vercel)
-The frontend is pre-configured with a Vercel routing manifest (`vercel.json`) and can be seamlessly deployed to Vercel. 
-- Ensure all environment variables starting with `VITE_` are set in the Vercel dashboard.
+With all configuration steps complete, boot both servers in separate terminal instances:
 
-### Backend (Express + Vercel/Render)
-The backend includes a `vercel.json` routing configuration to allow serverless execution.
-- Ensure all backend environment variables are added to the hosting environment dashboard.
+1.  **Start Backend**:
+    ```bash
+    cd backend
+    npm run dev
+    ```
+    *Starts the Express server on port `5001` with nodemon and Sentry instrumentation.*
+
+2.  **Start Frontend**:
+    ```bash
+    cd frontend
+    npm run dev
+    ```
+    *Starts the Vite dev server on port `5173`.*
+
+Open your web browser and navigate to [http://localhost:5173](http://localhost:5173).
+
+---
+
+## ⚡ Production Deployment (Vercel)
+
+Both frontend and backend are configured for simple serverless deployment on Vercel:
+
+1.  **Backend Deployment**:
+    *   Deploy the backend using the Vercel CLI:
+        ```bash
+        cd backend
+        vercel
+        ```
+    *   Ensure all backend environment variables (`MONGO_URI`, `CLERK_SECRET_KEY`, `STREAM_API_SECRET`, etc.) are configured in your Vercel Project Settings.
+
+2.  **Frontend Deployment**:
+    *   Deploy the frontend:
+        ```bash
+        cd frontend
+        vercel
+        ```
+    *   Set the variables in the Vercel Settings, pointing `VITE_API_BASE_URL` to your live backend endpoint.
+
+---
+
+## 🔒 Security Practices & Implementation Quality
+
+*   **Credential Segregation**: All secrets are loaded through a structured [backend/src/config/env.js](file:///c:/Users/hv702/Downloads/Slack/backend/src/config/env.js) validation layer, ensuring zero credential leaks into source code.
+*   **Lazy Database Connections**: The database handler uses a lazy-loading connection middleware in Express, which avoids keeping idle sockets open and prevents cluster timeouts on serverless runtimes.
+*   **Secure token exchange**: The client requests a limited-permission JWT token from GetStream generated on the backend using the authenticated Clerk user ID, preventing client-side secret leakage.
+*   **Dynamic CORS validation**: The backend dynamically validates requests against an array of trusted client domains while securely handling credentials, making it robust against cross-origin scripting attacks.
