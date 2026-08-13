@@ -131,23 +131,54 @@ Before starting, ensure you have:
 
 ### Step 1: Environment Variables Configuration
 
-To run the application, copy the example configurations and populate them with your credentials.
+Create a `.env` file inside both the `backend` and `frontend` folders using the templates below.
 
-1.  **Backend Configuration**:
-    Navigate to the `backend` folder, copy the example file, and update the values:
-    ```bash
-    cd backend
-    cp .env.example .env
-    ```
-    Configure the variables in the newly created [backend/.env](file:///c:/Users/hv702/Downloads/Slack/backend/.env) file (see [backend/.env.example](file:///c:/Users/hv702/Downloads/Slack/backend/.env.example) for structure).
+1.  **Backend Configuration** (`backend/.env`):
+    Create the file [backend/.env](file:///c:/Users/hv702/Downloads/Slack/backend/.env) and populate it with the following:
+    ```env
+    # Server Port
+    PORT=5001
 
-2.  **Frontend Configuration**:
-    Navigate to the `frontend` folder, copy the example file, and update the values:
-    ```bash
-    cd ../frontend
-    cp .env.example .env
+    # MongoDB Connection URI
+    MONGO_URI=your_mongodb_connection_uri
+
+    # Environment Name
+    NODE_ENV=development
+
+    # Clerk Authentication Keys
+    CLERK_PUBLISHABLE_KEY=pk_test_...
+    CLERK_SECRET_KEY=sk_test_...
+
+    # Stream Chat & Video API Credentials
+    STREAM_API_KEY=your_stream_api_key
+    STREAM_API_SECRET=your_stream_api_secret
+
+    # Sentry Observability DSN
+    SENTRY_DSN=your_sentry_dsn_url
+
+    # Inngest Serverless Workflows
+    INNGEST_EVENT_KEY=your_inngest_event_key
+    INNGEST_SIGNING_KEY=your_inngest_signing_key
+
+    # Frontend Client URL
+    CLIENT_URL=http://localhost:5173
     ```
-    Configure the variables in the newly created [frontend/.env](file:///c:/Users/hv702/Downloads/Slack/frontend/.env) file (see [frontend/.env.example](file:///c:/Users/hv702/Downloads/Slack/frontend/.env.example) for structure).
+
+2.  **Frontend Configuration** (`frontend/.env`):
+    Create the file [frontend/.env](file:///c:/Users/hv702/Downloads/Slack/frontend/.env) and populate it with the following:
+    ```env
+    # Clerk Publishable Key (Authentication)
+    VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
+
+    # Stream API Key (Chat & Video)
+    VITE_STREAM_API_KEY=your_stream_api_key
+
+    # Sentry DSN (Observability)
+    VITE_SENTRY_DSN=your_sentry_dsn_url
+
+    # Backend API Endpoint Base URL
+    VITE_API_BASE_URL=http://localhost:5001/api
+    ```
 
 ---
 
